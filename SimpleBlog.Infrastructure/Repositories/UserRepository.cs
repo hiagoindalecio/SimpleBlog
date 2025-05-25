@@ -27,11 +27,11 @@ namespace SimpleBlog.Infrastructure.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task<User> GetByIdAsync(int userId)
-            => _context.Users.AsNoTracking().FirstAsync(u => u.Id == userId);
+        public Task<User?> GetByIdAsync(int userId)
+            => _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
 
-        public Task<User> GetByEmailAsync(string email)
-            => _context.Users.AsNoTracking().FirstAsync(u => u.Email == email);
+        public Task<User?> GetByEmailAsync(string email)
+            => _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
 
         public Task<string?> GetNameByIdAsync(int userId)
             => _context.Users

@@ -27,8 +27,8 @@ namespace SimpleBlog.Infrastructure.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task<Post> GetByIdAsync(int postId)
-            => _context.Posts.AsNoTracking().FirstAsync(p => p.Id == postId);
+        public Task<Post?> GetByIdAsync(int postId)
+            => _context.Posts.AsNoTracking().FirstOrDefaultAsync(p => p.Id == postId);
 
         public IEnumerable<(int Id, string Title, string Content, string AuthorName, DateTime UpdatedAt)> GetAllPaged(int take, int skip)
             => _context.Posts
