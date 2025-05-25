@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Application.DTOs;
 using SimpleBlog.Application.Interfaces;
+using System.Security.Claims;
 
 namespace SimpleBlog.API.Controllers
 {
@@ -22,7 +23,8 @@ namespace SimpleBlog.API.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdatePost([FromBody] UpdatePostDto dto)
         {
-            await _postService.UpdatePostAsync(dto);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            await _postService.UpdatePostAsync(dto, userId);
             return Ok();
         }
 
@@ -30,7 +32,8 @@ namespace SimpleBlog.API.Controllers
         [Route("{postId:int}")]
         public async Task<IActionResult> DeletePost(int postId)
         {
-            await _postService.DeletePostAsync(postId);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            await _postService.DeletePostAsync(postId, userId);
             return Ok();
         }
 

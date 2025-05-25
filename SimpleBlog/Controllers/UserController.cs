@@ -15,6 +15,7 @@ namespace SimpleBlog.API.Controllers
         private readonly IUserService _userService = userService;
         private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
         {

@@ -31,15 +31,19 @@ namespace SimpleBlog.Application.Services
             await _notifier.SendNotificationToAllAsync($"New post by {userName}: {post.Title}");
         }
 
-        public async Task DeletePostAsync(int postId)
+        public async Task DeletePostAsync(int postId, int userId)
         {
             var post = await _postRepository.GetByIdAsync(postId) ?? throw new NotFoundException($"Post with ID {postId} not found.");
+            if (post.AuthorId != userId)
+                throw new BusinessRuleException("You are not allowed to delete this post.");
             await _postRepository.DeleteAsync(post);
         }
 
-        public async Task UpdatePostAsync(UpdatePostDto dto)
+        public async Task UpdatePostAsync(UpdatePostDto dto, int userId)
         {
             var post = await _postRepository.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Post with ID {dto.Id} not found.");
+            if (post.AuthorId != userId)
+                throw new BusinessRuleException("You are not allowed to update this post.");
             post.Update(dto.Title, dto.Content);
             if (!_validator.IsValid(post, out List<string> errors))
                 throw new BusinessRuleException($"Invalid post: {errors.Aggregate((a, b) => a + "\n " + b)}");
