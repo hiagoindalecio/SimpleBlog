@@ -63,7 +63,7 @@ namespace SimpleBlog.Application.Services
 
         public async Task UpdatePasswordAsync(UpdatePasswordDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(dto.UserId) ?? throw new NotFoundException($"User with ID {dto.UserId} not found.");
+            var user = await AuthenticateAsync(dto.Email, dto.OldPassword);
             if (!_userPasswordValidator.IsValid(dto.NewPassword, out List<string> passwordErrors))
                 throw new BusinessRuleException($"Invalid password: {passwordErrors.Aggregate((a, b) => a + "\n " + b)}");
             var hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.NewPassword);
