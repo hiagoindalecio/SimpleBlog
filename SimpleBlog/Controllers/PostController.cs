@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Application.DTOs;
 using SimpleBlog.Application.Interfaces;
 
-namespace SimpleBlog.API.Controllers
+namespace SimpleBlog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -36,9 +36,9 @@ namespace SimpleBlog.API.Controllers
 
         [HttpGet]
         [Route("{take:int}/{skip:int}")]
-        public async Task<IActionResult> GetAllPaged(int take, int skip)
+        public IActionResult GetAllPaged(int take, int skip)
         {
-            var posts = await _postService.GetAllPagedAsync(take, skip);
+            var posts = _postService.GetAllPaged(take, skip);
             return Ok(posts);
         }
     }

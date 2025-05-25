@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Application.DTOs;
 using SimpleBlog.Application.Interfaces;
 
-namespace SimpleBlog.API.Controllers
+namespace SimpleBlog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

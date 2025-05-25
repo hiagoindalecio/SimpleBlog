@@ -46,10 +46,10 @@ namespace SimpleBlog.Application.Services
             await _postRepository.UpdateAsync(post);
         }
 
-        public async Task<List<PagedPostsDto>> GetAllPagedAsync(int take, int skip)
+        public List<PagedPostsDto> GetAllPaged(int take, int skip)
         {
-            var posts = await _postRepository.GetAllPagedAsync(take, skip);
-            return posts;
+            var posts = _postRepository.GetAllPaged(take, skip);
+            return [.. posts.Select(p => new PagedPostsDto(p.Id, p.Title, p.Content, p.AuthorName, p.UpdatedAt))];
         }
     }
 }

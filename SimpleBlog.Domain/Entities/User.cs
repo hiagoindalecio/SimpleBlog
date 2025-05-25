@@ -11,13 +11,13 @@
         public User() : this(string.Empty, string.Empty, string.Empty)
         { }
 
-        internal void Update(string name, string email)
+        public void Update(string name, string email)
         {
             Name = name;
             Email = email;
         }
 
-        internal void UpdatePassword(string hashedPassword)
+        public void UpdatePassword(string hashedPassword)
         {
             HashedPassword = hashedPassword;
         }

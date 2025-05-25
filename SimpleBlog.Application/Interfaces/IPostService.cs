@@ -7,6 +7,6 @@ namespace SimpleBlog.Application.Interfaces
         Task CreatePostAsync(CreatePostDto dto);
         Task DeletePostAsync(int postId);
         Task UpdatePostAsync(UpdatePostDto dto);
-        Task<List<PagedPostsDto>> GetAllPagedAsync(int take, int skip);
+        List<PagedPostsDto> GetAllPaged(int take, int skip);
     }
 }

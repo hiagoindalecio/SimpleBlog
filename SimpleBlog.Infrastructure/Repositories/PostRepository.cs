@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SimpleBlog.Application.DTOs;
 using SimpleBlog.Domain.Entities;
 using SimpleBlog.Domain.Interfaces;
 using SimpleBlog.Infrastructure.Data;
@@ -31,18 +30,18 @@ namespace SimpleBlog.Infrastructure.Repositories
         public Task<Post> GetByIdAsync(int postId)
             => _context.Posts.AsNoTracking().FirstAsync(p => p.Id == postId);
 
-        public Task<List<PagedPostsDto>> GetAllPagedAsync(int take, int skip)
+        public IEnumerable<(int Id, string Title, string Content, string AuthorName, DateTime UpdatedAt)> GetAllPaged(int take, int skip)
             => _context.Posts
                 .OrderByDescending(p => p.UpdatedAt)
                 .Skip(skip)
                 .Take(take)
-                .Select(p => new PagedPostsDto(
+                .Select(p => new ValueTuple<int, string, string, string, DateTime>(
                     p.Id,
                     p.Title,
                     p.Content,
-                    p.Author != null ? p.Author.Name : "",
+                    p.Author != null ? p.Author.Name : string.Empty,
                     p.UpdatedAt
                 ))
-                .ToListAsync();
+                .AsEnumerable();
     }
 }

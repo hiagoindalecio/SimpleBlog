@@ -1,4 +1,6 @@
-﻿namespace SimpleBlog.Application.Interfaces
+﻿using Microsoft.AspNetCore.Http;
+
+namespace SimpleBlog.Application.Interfaces
 {
     public interface INotificationWebSocketHandler
     {

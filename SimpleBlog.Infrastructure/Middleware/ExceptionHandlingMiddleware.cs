@@ -1,7 +1,10 @@
-﻿using SimpleBlog.Application.Exceptions;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using SimpleBlog.Application.Exceptions;
 using SimpleBlog.Domain.Exceptions;
 using SimpleBlog.Infrastructure.Exceptions;
 using System.Net;
+using System.Text.Json;
 
 namespace SimpleBlog.Infrastructure.Middleware
 {
@@ -35,10 +38,12 @@ namespace SimpleBlog.Infrastructure.Middleware
                         _ => (int)HttpStatusCode.InternalServerError
                     };
 
-                    await context.Response.WriteAsJsonAsync(new
+                    var errorResponse = new
                     {
                         error = ex.Message
-                    });
+                    };
+                    var jsonResponse = JsonSerializer.Serialize(errorResponse);
+                    await context.Response.WriteAsync(jsonResponse);
                 }
             }
         }
