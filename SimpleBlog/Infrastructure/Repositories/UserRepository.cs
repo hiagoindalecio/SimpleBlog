@@ -35,7 +35,6 @@ namespace SimpleBlog.Infrastructure.Repositories
 
         public Task<string?> GetNameByIdAsync(int userId)
             => _context.Users
-                .AsNoTracking()
                 .Where(u => u.Id == userId)
                 .Select(user => user.Name)
                 .FirstOrDefaultAsync();
