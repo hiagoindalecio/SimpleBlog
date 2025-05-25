@@ -11,18 +11,22 @@ namespace SimpleBlog.Application.Services
     public class UserService(
         IUserRepository repo,
         IEntityValidator<User> validator,
-        IPasswordHasher<string> passwordHasher) : IUserService
+        IPasswordHasher<string> passwordHasher,
+        IUserPasswordValidator userPasswordValidator) : IUserService
     {
         private readonly IUserRepository _userRepository = repo;
         private readonly IEntityValidator<User> _validator = validator;
         private readonly IPasswordHasher<string> _passwordHasher = passwordHasher;
+        private readonly IUserPasswordValidator _userPasswordValidator = userPasswordValidator;
 
         public async Task CreateUserAsync(CreateUserDto dto)
         {
-            string hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.PlainPassword);
+            var hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.PlainPassword);
             var user = new User(dto.Name, dto.Email, hashedPassword);
             if (!_validator.IsValid(user, out List<string> errors))
                 throw new BusinessRuleException($"Invalid user: {errors.Aggregate((a, b) => a + "\n " + b)}");
+            if (!_userPasswordValidator.IsValid(dto.PlainPassword, out List<string> passwordErrors))
+                throw new BusinessRuleException($"Invalid password: {passwordErrors.Aggregate((a, b) => a + "\n " + b)}");
             await _userRepository.AddAsync(user);
         }
 
@@ -47,17 +51,22 @@ namespace SimpleBlog.Application.Services
             return userName;
         }
 
-        public async Task<bool> AuthenticateAsync(string email, string password)
+        public async Task<User> AuthenticateAsync(string email, string password)
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetByEmailAsync(email) ?? throw new NotFoundException($"User with email {email} not found.");
             var result = _passwordHasher.VerifyHashedPassword(email, user.HashedPassword, password);
-            return result == PasswordVerificationResult.Success;
+            if (result == PasswordVerificationResult.Failed)
+                throw new UnauthorizedAccessException("Invalid password.");
+
+            return user;
         }
 
         public async Task UpdatePasswordAsync(UpdatePasswordDto dto)
         {
             var user = await _userRepository.GetByIdAsync(dto.UserId) ?? throw new NotFoundException($"User with ID {dto.UserId} not found.");
-            string hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.NewPassword);
+            if (!_userPasswordValidator.IsValid(dto.NewPassword, out List<string> passwordErrors))
+                throw new BusinessRuleException($"Invalid password: {passwordErrors.Aggregate((a, b) => a + "\n " + b)}");
+            var hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.NewPassword);
             user.UpdatePassword(hashedPassword);
             await _userRepository.UpdateAsync(user);
         }

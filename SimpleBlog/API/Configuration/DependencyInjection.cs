@@ -4,6 +4,7 @@ using SimpleBlog.Application.Services;
 using SimpleBlog.Domain.Entities;
 using SimpleBlog.Domain.Interfaces;
 using SimpleBlog.Domain.Services;
+using SimpleBlog.Infrastructure.Authentication;
 using SimpleBlog.Infrastructure.Repositories;
 using SimpleBlog.Infrastructure.WebSockets;
 
@@ -16,6 +17,7 @@ namespace SimpleBlog.API.Configuration
             // Domain
             services.AddScoped<IEntityValidator<Post>, PostValidator>();
             services.AddScoped<IEntityValidator<User>, UserValidator>();
+            services.AddScoped<IUserPasswordValidator, UserPasswordValidator>();
 
             // Application
             services.AddScoped<IPostService, PostService>();
@@ -26,8 +28,7 @@ namespace SimpleBlog.API.Configuration
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddSingleton<INotificationWebSocketHandler, NotificationWebSocketHandler>();
-
-            // Other services
+            services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
             return services;
         }

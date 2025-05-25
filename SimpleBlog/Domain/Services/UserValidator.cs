@@ -15,8 +15,7 @@ namespace SimpleBlog.Domain.Services
                 errors.Add("The user email can't be empty!");
             else if (!user.Email.Contains('@') || !user.Email.Contains('.'))
                 errors.Add("The user email is invalid!");
-            // TODO: Add the password validation rule.
-
+            
             return errors.Count == 0;
         }
     }

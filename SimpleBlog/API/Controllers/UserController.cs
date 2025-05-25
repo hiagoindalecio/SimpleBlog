@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Application.DTOs;
 using SimpleBlog.Application.Interfaces;
 
@@ -6,9 +7,13 @@ namespace SimpleBlog.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IUserService userService) : ControllerBase
+    [Authorize]
+    public class UserController(
+        IUserService userService,
+        IJwtTokenGenerator jwtTokenGenerator) : ControllerBase
     {
         private readonly IUserService _userService = userService;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
@@ -32,12 +37,14 @@ namespace SimpleBlog.API.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        [Route("{email}/{password}")]
+        [Route("authenticate/{email}/{password}")]
         public async Task<IActionResult> Authenticate(string email, string password)
         {
-            var isAuthenticated = await _userService.AuthenticateAsync(email, password);
-            return Ok(isAuthenticated);
+            var authenticatedUser = await _userService.AuthenticateAsync(email, password);
+            var tokenDto = _jwtTokenGenerator.GenerateToken(authenticatedUser);
+            return Ok(tokenDto);
         }
 
         [HttpPut]

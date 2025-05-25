@@ -27,6 +27,7 @@ namespace SimpleBlog.Infrastructure.Middleware
                     BusinessRuleException => (int)HttpStatusCode.BadRequest,
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     WebSocketConnectionException => (int)HttpStatusCode.InternalServerError,
+                    UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

@@ -1,4 +1,4 @@
-﻿namespace SimpleBlog.Domain.Interfaces
+﻿namespace SimpleBlog.Application.Interfaces
 {
     public interface INotificationWebSocketHandler
     {

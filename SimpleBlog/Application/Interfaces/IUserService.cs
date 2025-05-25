@@ -1,4 +1,5 @@
 ﻿using SimpleBlog.Application.DTOs;
+using SimpleBlog.Domain.Entities;
 
 namespace SimpleBlog.Application.Interfaces
 {
@@ -8,7 +9,7 @@ namespace SimpleBlog.Application.Interfaces
         Task DeleteUserAsync(int userId);
         Task UpdateUserAsync(UpdateUserDto dto);
         Task<string> GetUserNameByIdAsync(int userId);
-        Task<bool> AuthenticateAsync(string email, string password);
+        Task<User> AuthenticateAsync(string email, string password);
         Task UpdatePasswordAsync(UpdatePasswordDto dto);
     }
 }

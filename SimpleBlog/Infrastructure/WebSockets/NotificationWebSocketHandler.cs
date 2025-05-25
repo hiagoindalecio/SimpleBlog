@@ -1,4 +1,4 @@
-﻿using SimpleBlog.Domain.Interfaces;
+﻿using SimpleBlog.Application.Interfaces;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;

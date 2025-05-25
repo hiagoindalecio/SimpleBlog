@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Application.DTOs;
 using SimpleBlog.Application.Interfaces;
 
@@ -6,6 +7,7 @@ namespace SimpleBlog.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PostController(IPostService postService) : ControllerBase
     {
         private readonly IPostService _postService = postService;
