@@ -71,7 +71,7 @@ Organized using DDD layers:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/SimpleBlog.git
+   git clone https://github.com/hiagoindalecio/SimpleBlog.git
    cd SimpleBlog
    ```
 
