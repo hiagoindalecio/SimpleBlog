@@ -10,7 +10,7 @@ using SimpleBlog.Infrastructure.WebSockets;
 
 namespace SimpleBlog.API.Configuration
 {
-    public static class DependencyInjection
+    public static class DependencyInjectionExtensions
     {
         public static IServiceCollection AddProjectDependencies(this IServiceCollection services)
         {

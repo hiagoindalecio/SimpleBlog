@@ -28,7 +28,7 @@ namespace SimpleBlog.Infrastructure.WebSockets
             }
             else
             {
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
         }
 
@@ -38,9 +38,7 @@ namespace SimpleBlog.Infrastructure.WebSockets
             var segment = new ArraySegment<byte>(buffer);
 
             foreach (var socket in _sockets.Values.Where(s => s.State == WebSocketState.Open))
-            {
                 await socket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
-            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimpleBlog.API.Configuration
 {
-    public static class Authentication
+    public static class JWTAuthenticationExtensions
     {
         public static IServiceCollection AddJWTAuthenticationConfig(this IServiceCollection services, IConfiguration configuration)
         {

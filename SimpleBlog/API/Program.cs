@@ -9,8 +9,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 builder.Services.AddJWTAuthenticationConfig(builder.Configuration);
-builder.Services.AddDbContext<SimpleBlogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<SimpleBlogDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddProjectDependencies();
 
 var app = builder.Build();
@@ -18,23 +17,19 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.UseSwagger();
-
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SimpleBlog API V1");
     });
 }
 app.UseCors();
+app.UseWebSockets();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseNotificationWebSocket(builder.Configuration);
 app.UseHttpsRedirection();
 app.MapControllers();
-app.UseWebSockets(new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromMinutes(2)
-});
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
