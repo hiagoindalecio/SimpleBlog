@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 namespace SimpleBlog.Infrastructure.WebSockets
 {
@@ -20,7 +21,23 @@ namespace SimpleBlog.Infrastructure.WebSockets
                 while (socket.State == WebSocketState.Open)
                 {
                     var buffer = new byte[1024 * 4];
-                    await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    var receiveResult = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                    while (!receiveResult.CloseStatus.HasValue)
+                    {
+                        try
+                        {
+                            var message = Encoding.UTF8.GetString(buffer, 0, receiveResult.Count);
+
+                            Console.WriteLine($"[WebSocket] Unexpected client message received: {message}");
+                        }
+                        catch
+                        { }
+
+                        await SendErrorAsync(socket, "Receiving messages is not supported.");
+                        await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Messages not allowed", CancellationToken.None);
+                        return;
+                    }
                 }
 
                 _sockets.TryRemove(socketId, out _);
@@ -39,6 +56,13 @@ namespace SimpleBlog.Infrastructure.WebSockets
 
             foreach (var socket in _sockets.Values.Where(s => s.State == WebSocketState.Open))
                 await socket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+
+        private static async Task SendErrorAsync(WebSocket socket, string errorMessage)
+        {
+            var errorJson = JsonSerializer.Serialize(new { error = errorMessage });
+            var bytes = Encoding.UTF8.GetBytes(errorJson);
+            await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }

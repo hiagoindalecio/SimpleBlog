@@ -14,29 +14,32 @@ namespace SimpleBlog.Infrastructure.Middleware
         {
             try
             {
-                await _next(context); // passa para o próximo middleware
+                await _next(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error caught by middleware");
-
-                context.Response.ContentType = "application/json";
-
-                context.Response.StatusCode = ex switch
+                if (context.WebSockets.IsWebSocketRequest)
+                    _logger.LogError(ex, "[WebSocket] An error occurred during WebSocket communication.");
+                else
                 {
-                    BusinessRuleException => (int)HttpStatusCode.BadRequest,
-                    NotFoundException => (int)HttpStatusCode.NotFound,
-                    WebSocketConnectionException => (int)HttpStatusCode.InternalServerError,
-                    UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
-                    _ => (int)HttpStatusCode.InternalServerError
-                };
+                    _logger.LogError(ex, "Error caught by middleware");
 
-                var result = new
-                {
-                    error = ex.Message
-                };
+                    context.Response.ContentType = "application/json";
 
-                await context.Response.WriteAsJsonAsync(result);
+                    context.Response.StatusCode = ex switch
+                    {
+                        BusinessRuleException => (int)HttpStatusCode.BadRequest,
+                        NotFoundException => (int)HttpStatusCode.NotFound,
+                        WebSocketConnectionException => (int)HttpStatusCode.InternalServerError,
+                        UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
+                        _ => (int)HttpStatusCode.InternalServerError
+                    };
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = ex.Message
+                    });
+                }
             }
         }
     }
