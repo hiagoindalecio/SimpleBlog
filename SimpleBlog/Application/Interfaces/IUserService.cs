@@ -7,6 +7,7 @@ namespace SimpleBlog.Application.Interfaces
         Task CreateUserAsync(CreateUserDto dto);
         Task DeleteUserAsync(int userId);
         Task UpdateUserAsync(UpdateUserDto dto);
+        Task<string> GetUserNameByIdAsync(int userId);
         Task<bool> AuthenticateAsync(string email, string password);
         Task UpdatePasswordAsync(UpdatePasswordDto dto);
     }

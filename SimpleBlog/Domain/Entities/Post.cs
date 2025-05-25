@@ -6,7 +6,7 @@
         public string Title { get; private set; } = title;
         public string Content { get; private set; } = content;
         public int AuthorId { get; private set; } = authorId;
-        public User Author { get; private set; } = new();
+        public User? Author { get; private set; }
         public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
 
         public void Update(string title, string content)

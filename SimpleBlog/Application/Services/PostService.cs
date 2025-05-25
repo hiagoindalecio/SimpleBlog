@@ -10,21 +10,25 @@ namespace SimpleBlog.Application.Services
     public class PostService(
         IPostRepository repo,
         IEntityValidator<Post> validator,
-        IWebSocketNotifierService notifier) : IPostService
+        INotificationWebSocketHandler notifier,
+        IUserService userService) : IPostService
     {
         private readonly IPostRepository _postRepository = repo;
         private readonly IEntityValidator<Post> _validator = validator;
-        private readonly IWebSocketNotifierService _notifier = notifier;
+        private readonly INotificationWebSocketHandler _notifier = notifier;
+        private readonly IUserService _userService = userService;
 
         public async Task CreatePostAsync(CreatePostDto dto)
         {
             var post = new Post(dto.Title, dto.Content, dto.AuthorId);
 
             if (!_validator.IsValid(post, out List<string> errors))
-                throw new BusinessRuleException($"Invalid post! {errors.Aggregate((a, b) => a + "\n " + b)}");
+                throw new BusinessRuleException($"Invalid post: {errors.Aggregate((a, b) => a + "\n " + b)}");
+
+            string userName = await _userService.GetUserNameByIdAsync(dto.AuthorId) ?? throw new NotFoundException($"User with ID {dto.AuthorId} not found.");
 
             await _postRepository.AddAsync(post);
-            await _notifier.NotifyAsync($"New post: {post.Title}");
+            await _notifier.SendNotificationToAllAsync($"New post by {userName}: {post.Title}");
         }
 
         public async Task DeletePostAsync(int postId)
@@ -38,7 +42,7 @@ namespace SimpleBlog.Application.Services
             var post = await _postRepository.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Post with ID {dto.Id} not found.");
             post.Update(dto.Title, dto.Content);
             if (!_validator.IsValid(post, out List<string> errors))
-                throw new BusinessRuleException($"Invalid post! {errors.Aggregate((a, b) => a + "\n " + b)}");
+                throw new BusinessRuleException($"Invalid post: {errors.Aggregate((a, b) => a + "\n " + b)}");
             await _postRepository.UpdateAsync(post);
         }
 

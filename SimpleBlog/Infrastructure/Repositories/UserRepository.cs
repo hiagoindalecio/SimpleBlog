@@ -5,9 +5,9 @@ using SimpleBlog.Infrastructure.Data;
 
 namespace SimpleBlog.Infrastructure.Repositories
 {
-    public class UserRepository(BlogDbContext context) : IUserRepository
+    public class UserRepository(SimpleBlogDbContext context) : IUserRepository
     {
-        private readonly BlogDbContext _context = context;
+        private readonly SimpleBlogDbContext _context = context;
 
         public Task AddAsync(User user)
         {
@@ -32,5 +32,12 @@ namespace SimpleBlog.Infrastructure.Repositories
 
         public Task<User> GetByEmailAsync(string email)
             => _context.Users.AsNoTracking().FirstAsync(u => u.Email == email);
+
+        public Task<string?> GetNameByIdAsync(int userId)
+            => _context.Users
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(user => user.Name)
+                .FirstOrDefaultAsync();
     }
 }

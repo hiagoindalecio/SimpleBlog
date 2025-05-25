@@ -6,6 +6,7 @@
         public string Name { get; private set; } = name;
         public string Email { get; private set; } = email;
         public string HashedPassword { get; private set; } = hashedPassword;
+        public List<Post>? Posts { get; set; }
 
         public User() : this(string.Empty, string.Empty, string.Empty)
         { }

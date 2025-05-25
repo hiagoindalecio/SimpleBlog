@@ -7,18 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="2 - Application\Interfaces\IBaseService.cs" />
+    <Compile Remove="Application\Interfaces\IBaseService.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="5 - Tests\Domain.Tests\" />
-    <Folder Include="5 - Tests\Application.Tests\" />
-    <Folder Include="5 - Tests\API.Tests\" />
+    <Folder Include="Tests\Domain.Tests\" />
+    <Folder Include="Tests\Application.Tests\" />
+    <Folder Include="Tests\API.Tests\" />
   </ItemGroup>
 
 </Project>

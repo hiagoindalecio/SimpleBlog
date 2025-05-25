@@ -22,7 +22,7 @@ namespace SimpleBlog.Application.Services
             string hashedPassword = _passwordHasher.HashPassword(dto.Email, dto.PlainPassword);
             var user = new User(dto.Name, dto.Email, hashedPassword);
             if (!_validator.IsValid(user, out List<string> errors))
-                throw new BusinessRuleException($"Invalid user! {errors.Aggregate((a, b) => a + "\n " + b)}");
+                throw new BusinessRuleException($"Invalid user: {errors.Aggregate((a, b) => a + "\n " + b)}");
             await _userRepository.AddAsync(user);
         }
 
@@ -37,8 +37,14 @@ namespace SimpleBlog.Application.Services
             var existingUser = await _userRepository.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"User with ID {dto.Id} not found.");
             existingUser.Update(dto.Name, dto.Email);
             if (!_validator.IsValid(existingUser, out List<string> errors))
-                throw new BusinessRuleException($"Invalid user! {errors.Aggregate((a, b) => a + "\n " + b)}");
+                throw new BusinessRuleException($"Invalid user: {errors.Aggregate((a, b) => a + "\n " + b)}");
             await _userRepository.UpdateAsync(existingUser);
+        }
+
+        public async Task<string> GetUserNameByIdAsync(int userId)
+        {
+            var userName = await _userRepository.GetNameByIdAsync(userId) ?? throw new NotFoundException($"User with ID {userId} not found.");
+            return userName;
         }
 
         public async Task<bool> AuthenticateAsync(string email, string password)

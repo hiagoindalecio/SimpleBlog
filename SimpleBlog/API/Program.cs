@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using SimpleBlog.API.Configuration;
+using SimpleBlog.Infrastructure.Data;
 using SimpleBlog.Infrastructure.Middleware;
+using SimpleBlog.Infrastructure.WebSockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +10,8 @@ builder.Services.AddProjectDependencies();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<SimpleBlogDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -27,20 +32,10 @@ app.MapControllers();
 
 app.UseWebSockets();
 
-app.Use(async (context, next) =>
+app.Map("/ws/notifications", async context =>
 {
-    if (context.Request.Path == "/ws")
-    {
-        if (context.WebSockets.IsWebSocketRequest)
-        {
-            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            //await webSocketHandler.HandleAsync(webSocket); // lógica de notificação
-        }
-    }
-    else
-    {
-        await next();
-    }
+    var handler = context.RequestServices.GetRequiredService<NotificationWebSocketHandler>();
+    await handler.HandleAsync(context);
 });
 
 app.Run();

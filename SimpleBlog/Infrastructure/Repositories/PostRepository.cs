@@ -6,9 +6,9 @@ using SimpleBlog.Infrastructure.Data;
 
 namespace SimpleBlog.Infrastructure.Repositories
 {
-    public class PostRepository(BlogDbContext context) : IPostRepository
+    public class PostRepository(SimpleBlogDbContext context) : IPostRepository
     {
-        private readonly BlogDbContext _context = context;
+        private readonly SimpleBlogDbContext _context = context;
 
         public Task AddAsync(Post post)
         {
@@ -33,11 +33,16 @@ namespace SimpleBlog.Infrastructure.Repositories
 
         public Task<List<PagedPostsDto>> GetAllPagedAsync(int take, int skip)
             => _context.Posts
-                .AsNoTracking()
+                .OrderByDescending(p => p.UpdatedAt)
                 .Skip(skip)
                 .Take(take)
-                .Include(p => p.Author)
-                .Select(p => new PagedPostsDto(p.Id, p.Title, p.Content, p.Author.Name, p.UpdatedAt))
+                .Select(p => new PagedPostsDto(
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    p.Author != null ? p.Author.Name : "",
+                    p.UpdatedAt
+                ))
                 .ToListAsync();
     }
 }

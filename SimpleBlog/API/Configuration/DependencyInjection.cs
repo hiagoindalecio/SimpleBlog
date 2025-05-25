@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SimpleBlog.Application.Interfaces;
+using SimpleBlog.Application.Services;
 using SimpleBlog.Domain.Entities;
 using SimpleBlog.Domain.Interfaces;
 using SimpleBlog.Domain.Services;
-using SimpleBlog.Application.Interfaces;
-using SimpleBlog.Application.Services;
 using SimpleBlog.Infrastructure.Repositories;
+using SimpleBlog.Infrastructure.WebSockets;
 
 namespace SimpleBlog.API.Configuration
 {
@@ -19,12 +20,12 @@ namespace SimpleBlog.API.Configuration
             // Application
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IWebSocketNotifierService, WebSocketNotifierService>();
 
             // Infrastructure
             services.AddScoped<IPasswordHasher<string>, PasswordHasher<string>>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
+            services.AddSingleton<INotificationWebSocketHandler, NotificationWebSocketHandler>();
 
             // Other services
 
