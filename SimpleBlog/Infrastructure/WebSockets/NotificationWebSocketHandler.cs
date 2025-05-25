@@ -62,6 +62,8 @@ namespace SimpleBlog.Infrastructure.WebSockets
                 lock (_connectionsPerIp)
                 {
                     _connectionsPerIp[ip]--;
+                    if (_connectionsPerIp[ip] == 0)
+                        _connectionsPerIp.Remove(ip);
                 }
             }
             else
